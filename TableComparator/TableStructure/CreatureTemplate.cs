@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TableComparator.TableStructure
 {
-    public class Creature
+    public struct Creature
     {
         public uint entry;
         public float speed_run;
