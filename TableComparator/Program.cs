@@ -4,14 +4,14 @@ using MySql.Data.MySqlClient;
 using TableComparator.TableStructure;
 using System.Globalization;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace TableComparator
 {
     class Program
     {
-        const string connectionInfo = ("host=127.0.0.1;port='3306';database='dbName';UserName='userName';Password='password';Connection Timeout='120000';");
         static MySqlCommand command;
-        static MySqlConnection connection = new MySqlConnection(connectionInfo);
+        static MySqlConnection connection;
 
         static List<Creature> creature = new List<Creature>(); //normal data
         static List<Creature> creatureS = new List<Creature>(); //data from sniff
@@ -28,6 +28,17 @@ namespace TableComparator
 
         static void Main(string[] args)
         {
+            using (StreamReader reader = new StreamReader("config.xml"))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Config));
+                Config config = (Config)serializer.Deserialize(reader);
+
+                string connectionInfo = string.Format("host={0};port='{1}';database='{2}';UserName='{3}';Password='{4}';Connection Timeout='{5}'",
+                    config.host, config.port, config.dataBase, config.userName, config.password, config.connectionTimeOut);
+
+                connection = new MySqlConnection(connectionInfo);
+            }
+
             Console.Title = "Table Comparator v1.0";
             AppDomain.CurrentDomain.UnhandledException +=
                 (o, e) => CrashReport(e.ExceptionObject.ToString());

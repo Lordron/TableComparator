@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <host>localhost</host>
+  <port>3306</port>
+  <userName>mangos</userName>
+  <password>mangos</password>
+  <dataBase>mangos</dataBase>
+  <connectionTimeOut>12000</connectionTimeOut>
+</Config>
