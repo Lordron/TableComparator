@@ -9,7 +9,7 @@ namespace TableComparator
 {
     class Program
     {
-        const string connectionInfo = ("host=127.0.0.1;port='3306';database='mangos';UserName='mangos';Password='mangos';Connection Timeout='120000';");
+        const string connectionInfo = ("host=127.0.0.1;port='3306';database='dbName';UserName='userName';Password='password';Connection Timeout='120000';");
         static MySqlCommand command;
         static MySqlConnection connection = new MySqlConnection(connectionInfo);
 
@@ -19,9 +19,12 @@ namespace TableComparator
         static List<ModelInfo> model = new List<ModelInfo>();
         static List<ModelInfo> modelS = new List<ModelInfo>();
 
-        static uint BadQuery;
-        static string table;
-        static string field;
+        static List<GameobjectTemplate> go = new List<GameobjectTemplate>();
+        static List<GameobjectTemplate> gos = new List<GameobjectTemplate>();
+
+        static uint BadQuery = 0;
+        static string table = "<null>";
+        static string field = "<null>";
 
         static void Main(string[] args)
         {
@@ -34,9 +37,10 @@ namespace TableComparator
 
             Console.WriteLine("==========||====================================================||=========||");
             Console.WriteLine("Statistics|| Templates: || Bad fields:  || Table:               || %       ||");
-            BadQuery = 0;
+
             SelectCreature();
             SelectModel();
+            SelectGameObject();
 
             Console.WriteLine("==========||====================================================||=========||");
         }
@@ -54,39 +58,39 @@ namespace TableComparator
                     Creature cr = new Creature();
                     Creature crs = new Creature();
 
-                    cr.entry = db[0].ToUint();
+                    cr.entry = db[0].ToUint32();
                     cr.speed_run = db[1].ToFloat();
                     cr.speed_walk = db[2].ToFloat();
-                    cr.faction = db[3].ToUint();
-                    cr.dynamicFlags = db[4].ToUint();
-                    cr.unit_flag = db[5].ToUint();
-                    cr.rangeAttackTime = db[6].ToUint();
-                    cr.baseAttackTime = db[7].ToUint();
+                    cr.faction = db[3].ToUint32();
+                    cr.dynamicFlags = db[4].ToUint32();
+                    cr.unit_flag = db[5].ToUint32();
+                    cr.rangeAttackTime = db[6].ToUint32();
+                    cr.baseAttackTime = db[7].ToUint32();
                     cr.scale = db[8].ToFloat();
-                    cr.unit_class = db[9].ToUint();
+                    cr.unit_class = db[9].ToUint32();
                     cr.minDamage = db[10].ToFloat();
                     cr.maxDamage = db[11].ToFloat();
-                    cr.attackPower = db[12].ToUint();
-                    cr.rangeAttackPower = db[13].ToUint();
-                    cr.dmgMultiplier = db[14].ToUint();
-                    cr.vehicleId = db[15].ToUint16();
+                    cr.attackPower = db[12].ToUint32();
+                    cr.rangeAttackPower = db[13].ToUint32();
+                    cr.dmgMultiplier = db[14].ToUint32();
+                    cr.vehicleId = db[15].ToUInt16();
 
-                    crs.entry = db[16].ToUint();
+                    crs.entry = db[16].ToUint32();
                     crs.speed_run = db[17].ToFloat();
                     crs.speed_walk = db[18].ToFloat();
-                    crs.faction = db[19].ToUint();
-                    crs.dynamicFlags = db[20].ToUint();
-                    crs.unit_flag = db[21].ToUint();
-                    crs.rangeAttackTime = db[22].ToUint();
-                    crs.baseAttackTime = db[23].ToUint();
+                    crs.faction = db[19].ToUint32();
+                    crs.dynamicFlags = db[20].ToUint32();
+                    crs.unit_flag = db[21].ToUint32();
+                    crs.rangeAttackTime = db[22].ToUint32();
+                    crs.baseAttackTime = db[23].ToUint32();
                     crs.scale = db[24].ToFloat();
-                    crs.unit_class = db[25].ToUint();
+                    crs.unit_class = db[25].ToUint32();
                     crs.minDamage = db[26].ToFloat();
                     crs.maxDamage = db[27].ToFloat();
-                    crs.attackPower = db[28].ToUint();
-                    crs.rangeAttackPower = db[29].ToUint();
-                    crs.dmgMultiplier = db[30].ToUint();
-                    crs.vehicleId = db[31].ToUint16();
+                    crs.attackPower = db[28].ToUint32();
+                    crs.rangeAttackPower = db[29].ToUint32();
+                    crs.dmgMultiplier = db[30].ToUint32();
+                    crs.vehicleId = db[31].ToUInt16();
 
                     creature.Add(cr);
                     creatureS.Add(crs);
@@ -176,12 +180,12 @@ namespace TableComparator
                     ModelInfo mod = new ModelInfo();
                     ModelInfo modS = new ModelInfo();
 
-                    mod.modelid = db[0].ToUint();
+                    mod.modelid = db[0].ToUint32();
                     mod.bounding_radius = db[1].ToFloat();
                     mod.combat_reach = db[2].ToFloat();
                     mod.gender = db[3].ToSByte();
 
-                    modS.modelid = db[4].ToUint();
+                    modS.modelid = db[4].ToUint32();
                     modS.bounding_radius = db[5].ToFloat();
                     modS.combat_reach = db[6].ToFloat();
                     modS.gender = db[7].ToSByte();
@@ -199,6 +203,7 @@ namespace TableComparator
             {
                 uint modelId = 0;
                 int counts = modelS.Count;
+
                 for (int i = 0; i < counts; ++i)
                 {
                     ModelInfo mod = model[i];
@@ -213,6 +218,63 @@ namespace TableComparator
 
                     if (!object.Equals(mod.gender, mods.gender))
                         Query("gender", mods.gender, modelId, writer);
+
+                    if (i == (counts - 1))
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);
+                }
+            }
+
+            return false;
+        }
+
+        static bool SelectGameObject()
+        {
+            table = "gameobject_template";
+            field = "entry";
+
+            string query = "SELECT gameobject_templat.`entry`, gameobject_templat.`faction`, gameobject_templat.`flags`, gameobject_templat_sniff.`entry`, gameobject_templat_sniff.`faction`, gameobject_templat_sniff.`flags` FROM gameobject_templat INNER JOIN gameobject_templat_sniff ON gameobject_templat.`entry` = gameobject_templat_sniff.`entry` ORDER BY gameobject_templat.`entry`";
+            command = new MySqlCommand(query, connection);
+
+            using (MySqlDataReader db = command.ExecuteReader())
+            {
+                while (db.Read())
+                {
+                    GameobjectTemplate g = new GameobjectTemplate();
+                    GameobjectTemplate gs = new GameobjectTemplate();
+
+                    g.entry = db[0].ToUint32();
+                    g.faction = db[1].ToUint32();
+                    g.flags = db[2].ToUint32();
+
+                    gs.entry = db[3].ToUint32();
+                    gs.faction = db[4].ToUint32();
+                    gs.flags = db[5].ToUint32();
+
+                    go.Add(g);
+                    gos.Add(gs);
+                }
+            }
+            return CompareGameObject();
+        }
+
+        static bool CompareGameObject()
+        {
+            using (StreamWriter writer = new StreamWriter("gameobject_template.sql", true))
+            {
+                uint entry = 0;
+                int counts = modelS.Count;
+
+                for (int i = 0; i < counts; ++i)
+                {
+                    GameobjectTemplate g = go[i];
+                    GameobjectTemplate gs = gos[i];
+                    entry = g.entry;
+
+                    if (!object.Equals(g.faction, gs.faction))
+                        Query("faction", g.faction, entry, writer);
+
+                    if (!object.Equals(g.flags, gs.flags))
+                        Query("flags", g.flags, entry, writer);
 
                     if (i == (counts - 1))
                         Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);

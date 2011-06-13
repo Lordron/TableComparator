@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TableComparator.TableStructure
 {
-    public class ModelInfo
+    public struct ModelInfo
     {
         public uint modelid;
         public float bounding_radius;

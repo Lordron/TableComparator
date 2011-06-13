@@ -7,24 +7,45 @@ namespace TableComparator
 {
     public static class Generic
     {
-        public static uint ToUint(this object val)
+        public static uint ToUint32(this object val)
         {
             uint num;
             uint.TryParse(val.ToString(), out num);
             return num;
         }
 
-        public static UInt16 ToUint16(this object val)
+        public static ushort ToUInt16(this object val)
         {
-            UInt16 num;
-            UInt16.TryParse(val.ToString(), out num);
+            ushort num;
+            ushort.TryParse(val.ToString(), out num);
             return num;
         }
 
-        public static int ToInt(this object val)
+        public static ulong ToUInt64(this object val)
+        {
+            ulong num;
+            ulong.TryParse(val.ToString(), out num);
+            return num;
+        }
+
+        public static int ToInt32(this object val)
         {
             int num;
             int.TryParse(val.ToString(), out num);
+            return num;
+        }
+
+        public static short ToInt16(this object val)
+        {
+            short num;
+            short.TryParse(val.ToString(), out num);
+            return num;
+        }
+
+        public static long ToInt64(this object val)
+        {
+            long num;
+            long.TryParse(val.ToString(), out num);
             return num;
         }
 
@@ -39,6 +60,13 @@ namespace TableComparator
         {
             sbyte num;
             sbyte.TryParse(val.ToString(), out num);
+            return num;
+        }
+
+        public static byte ToByte(this object val)
+        {
+            byte num;
+            byte.TryParse(val.ToString(), out num);
             return num;
         }
     }
