@@ -32,15 +32,17 @@ namespace TableComparator
             if (!ConnectionIsOpen)
                 return;
 
+            Console.WriteLine("==========||====================================================||=========||");
+            Console.WriteLine("Statistics|| Templates: || Bad fields:  || Table:               || %       ||");
             BadQuery = 0;
             SelectCreature();
             SelectModel();
+
+            Console.WriteLine("==========||====================================================||=========||");
         }
 
         static bool SelectCreature()
         {
-            Console.WriteLine("Select creature_template data...");
-
             table = "creature_template";
             field = "entry";
             string query = "SELECT creature_template.entry, creature_template.speed_run, creature_template.speed_walk, creature_template.faction_A, creature_template.dynamicflags, creature_template.unit_flags, creature_template.rangeattacktime, creature_template.baseattacktime, creature_template.scale, creature_template.unit_class, creature_template.mindmg, creature_template.maxdmg, creature_template.attackpower, creature_template.rangedattackpower, creature_template.dmg_multiplier, creature_template.VehicleId, creature_template_sniff.entry, creature_template_sniff.speed_run, creature_template_sniff.speed_walk, creature_template_sniff.faction_A, creature_template_sniff.dynamicflags, creature_template_sniff.unit_flags, creature_template_sniff.rangeattacktime, creature_template_sniff.baseattacktime, creature_template_sniff.scale, creature_template_sniff.unit_class, creature_template_sniff.mindmg, creature_template_sniff.maxdmg, creature_template_sniff.attackpower, creature_template_sniff.rangedattackpower, creature_template_sniff.dmg_multiplier, creature_template_sniff.VehicleId FROM creature_template INNER JOIN creature_template_sniff ON creature_template.`entry` = creature_template_sniff.`entry` ORDER BY creature_template.entry";
@@ -95,8 +97,6 @@ namespace TableComparator
 
         static bool CreatureCompare()
         {
-            Console.WriteLine("Compare creature_template data...");
-
             using (StreamWriter writer = new StreamWriter("creature_template.sql", true))
             {
                 uint entry = 0;
@@ -104,68 +104,65 @@ namespace TableComparator
 
                 for (int i = 0; i < counts; ++i)
                 {
-                    entry = creatureS[i].entry;
-                    if (!object.Equals(creature[i].speed_run, creatureS[i].speed_run))
-                        Query("speed_run", creatureS[i].speed_run, entry, writer);
+                    Creature cr = creature[i];
+                    Creature crs = creatureS[i];
+                    entry = crs.entry;
 
-                    if (!object.Equals(creature[i].speed_walk, creatureS[i].speed_walk))
-                        Query("speed_walk", creatureS[i].speed_walk, entry, writer);
+                    if (!object.Equals(cr.speed_run, crs.speed_run))
+                        Query("speed_run", crs.speed_run, entry, writer);
 
-                    if (!object.Equals(creature[i].vehicleId, creatureS[i].vehicleId))
-                        Query("vehicle_id", creatureS[i].vehicleId, entry, writer);
+                    if (!object.Equals(cr.speed_walk, crs.speed_walk))
+                        Query("speed_walk", crs.speed_walk, entry, writer);
 
-                    if (!object.Equals(creature[i].unit_class, creatureS[i].unit_class))
-                        Query("unit_class", creatureS[i].unit_class, entry, writer);
+                    if (!object.Equals(cr.vehicleId, crs.vehicleId))
+                        Query("vehicle_id", crs.vehicleId, entry, writer);
 
-                    if (!object.Equals(creature[i].unit_flag, creatureS[i].unit_flag))
-                        Query("unit_flags", creatureS[i].unit_flag, entry, writer);
+                    if (!object.Equals(cr.unit_class, crs.unit_class))
+                        Query("unit_class", crs.unit_class, entry, writer);
 
-                    if (!object.Equals(creature[i].faction, creatureS[i].faction))
-                        Query("faction_A", "faction_H", creatureS[i].faction, entry, writer);
+                    if (!object.Equals(cr.unit_flag, crs.unit_flag))
+                        Query("unit_flags", crs.unit_flag, entry, writer);
 
-                    if (!object.Equals(creature[i].dynamicFlags, creatureS[i].dynamicFlags))
-                        Query("dynamicflags", creatureS[i].dynamicFlags, entry, writer);
+                    if (!object.Equals(cr.faction, crs.faction))
+                        Query("faction_A", "faction_H", crs.faction, entry, writer);
 
-                    if (!object.Equals(creature[i].scale, creatureS[i].scale))
-                        Query("scale", creatureS[i].scale, entry, writer);
+                    if (!object.Equals(cr.dynamicFlags, crs.dynamicFlags))
+                        Query("dynamicflags", crs.dynamicFlags, entry, writer);
 
-                    if (!object.Equals(creature[i].maxDamage, creatureS[i].maxDamage))
-                        Query("maxdmg", creatureS[i].maxDamage, entry, writer);
+                    if (!object.Equals(cr.scale, crs.scale))
+                        Query("scale", crs.scale, entry, writer);
 
-                    if (!object.Equals(creature[i].minDamage, creatureS[i].minDamage))
-                        Query("mindmg", creatureS[i].minDamage, entry, writer);
+                    if (!object.Equals(cr.maxDamage, crs.maxDamage))
+                        Query("maxdmg", crs.maxDamage, entry, writer);
 
-                    if (!object.Equals(creature[i].dmgMultiplier, creatureS[i].dmgMultiplier))
-                        Query("dmg_multiplier", creatureS[i].dmgMultiplier, entry, writer);
+                    if (!object.Equals(cr.minDamage, crs.minDamage))
+                        Query("mindmg", crs.minDamage, entry, writer);
 
-                    if (!object.Equals(creature[i].attackPower, creatureS[i].attackPower))
-                        Query("attackpower", creatureS[i].attackPower, entry, writer);
+                    if (!object.Equals(cr.dmgMultiplier, crs.dmgMultiplier))
+                        Query("dmg_multiplier", crs.dmgMultiplier, entry, writer);
 
-                    if (!object.Equals(creature[i].rangeAttackPower, creatureS[i].rangeAttackPower))
-                        Query("rangedattackpower", creatureS[i].rangeAttackPower, entry, writer);
+                    if (!object.Equals(cr.attackPower, crs.attackPower))
+                        Query("attackpower", crs.attackPower, entry, writer);
 
-                    if (!object.Equals(creature[i].rangeAttackTime, creatureS[i].rangeAttackTime))
-                        Query("rangeattacktime", creatureS[i].rangeAttackTime, entry, writer);
+                    if (!object.Equals(cr.rangeAttackPower, crs.rangeAttackPower))
+                        Query("rangedattackpower", crs.rangeAttackPower, entry, writer);
 
-                    if (!object.Equals(creature[i].baseAttackTime, creatureS[i].baseAttackTime))
-                        Query("baseattacktime", creatureS[i].baseAttackTime, entry, writer);
+                    if (!object.Equals(cr.rangeAttackTime, crs.rangeAttackTime))
+                        Query("rangeattacktime", crs.rangeAttackTime, entry, writer);
+
+                    if (!object.Equals(cr.baseAttackTime, crs.baseAttackTime))
+                        Query("baseattacktime", crs.baseAttackTime, entry, writer);
 
                     if (i == (counts - 1))
-                        Statistics(counts);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);
                 }
             }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Done!");
-            Console.ResetColor();
 
             return false;
         }
 
         static bool SelectModel()
         {
-            Console.WriteLine("Select creature_model_info data...");
-
             table = "creature_model_info";
             field = "modelId";
 
@@ -198,32 +195,29 @@ namespace TableComparator
 
         static bool CompareModel()
         {
-            Console.WriteLine("Compare creature_model_info data...");
-
             using (StreamWriter writer = new StreamWriter("creature_model_info.sql", true))
             {
                 uint modelId = 0;
                 int counts = modelS.Count;
                 for (int i = 0; i < counts; ++i)
                 {
-                    modelId = modelS[i].modelid;
-                    if (!object.Equals(model[i].bounding_radius, modelS[i].bounding_radius))
-                        Query("bounding_radius", modelS[i].bounding_radius, modelId, writer);
+                    ModelInfo mod = model[i];
+                    ModelInfo mods = modelS[i];
+                    modelId = mod.modelid;
 
-                    if (!object.Equals(model[i].combat_reach, modelS[i].combat_reach))
-                        Query("combat_reach", modelS[i].combat_reach, modelId, writer);
+                    if (!object.Equals(mod.bounding_radius, mods.bounding_radius))
+                        Query("bounding_radius", mods.bounding_radius, modelId, writer);
 
-                    if (!object.Equals(model[i].gender, modelS[i].gender))
-                        Query("gender", modelS[i].gender, modelId, writer);
+                    if (!object.Equals(mod.combat_reach, mods.combat_reach))
+                        Query("combat_reach", mods.combat_reach, modelId, writer);
+
+                    if (!object.Equals(mod.gender, mods.gender))
+                        Query("gender", mods.gender, modelId, writer);
 
                     if (i == (counts - 1))
-                        Statistics(counts);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);
                 }
             }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Done!");
-            Console.ResetColor();
 
             return false;
         }
@@ -234,14 +228,6 @@ namespace TableComparator
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
             Console.ResetColor();
-        }
-
-        static void Statistics(int Count)
-        {
-            Console.WriteLine("==========||====================================================||");
-            Console.WriteLine("Statistics|| Templates: || Bad fields: || table name:        ||");
-            Console.WriteLine("==========|| {0,-12}| {1,-16}| {2,-12}||", Count, BadQuery, table);
-            Console.WriteLine("==========||====================================================||");
         }
 
         static void Query(string field0, object value, uint entry, StreamWriter writer)
