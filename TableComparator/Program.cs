@@ -14,13 +14,16 @@ namespace TableComparator
         static MySqlConnection connection;
 
         static List<Creature> creature = new List<Creature>();
-        static List<Creature> creatureS = new List<Creature>();
+        static List<Creature> creatures = new List<Creature>();
 
         static List<ModelInfo> model = new List<ModelInfo>();
-        static List<ModelInfo> modelS = new List<ModelInfo>();
+        static List<ModelInfo> models = new List<ModelInfo>();
 
         static List<GameobjectTemplate> go = new List<GameobjectTemplate>();
         static List<GameobjectTemplate> gos = new List<GameobjectTemplate>();
+
+        static List<EquipmentTemplate> equip = new List<EquipmentTemplate>();
+        static List<EquipmentTemplate> equips = new List<EquipmentTemplate>();
 
         static uint BadQuery = 0;
         static string table = "<null>";
@@ -52,7 +55,7 @@ namespace TableComparator
             SelectCreature();
             SelectModel();
             SelectGameObject();
-
+            SelectEquip();
             Console.WriteLine("==========||====================================================||=========||");
         }
 
@@ -104,7 +107,7 @@ namespace TableComparator
                     crs.vehicleId = db[31].ToUInt16();
 
                     creature.Add(cr);
-                    creatureS.Add(crs);
+                    creatures.Add(crs);
                 }
             }
             return CreatureCompare(); ;
@@ -114,13 +117,15 @@ namespace TableComparator
         {
             using (StreamWriter writer = new StreamWriter("creature_template.sql", true))
             {
+                writer.WriteLine(string.Format("-- Dump of {0}", DateTime.Now));
+
                 uint entry = 0;
-                int counts = creatureS.Count;
+                int counts = creatures.Count;
 
                 for (int i = 0; i < counts; ++i)
                 {
                     Creature cr = creature[i];
-                    Creature crs = creatureS[i];
+                    Creature crs = creatures[i];
                     entry = crs.entry;
 
                     if (!object.Equals(cr.speed_run, crs.speed_run))
@@ -202,7 +207,7 @@ namespace TableComparator
                     modS.gender = db[7].ToSByte();
 
                     model.Add(mod);
-                    modelS.Add(modS);
+                    models.Add(modS);
                 }
             }
             return CompareModel();
@@ -212,13 +217,15 @@ namespace TableComparator
         {
             using (StreamWriter writer = new StreamWriter("creature_model_info.sql", true))
             {
+                writer.WriteLine(string.Format("-- Dump of {0}", DateTime.Now));
+
                 uint modelId = 0;
-                int counts = modelS.Count;
+                int counts = models.Count;
 
                 for (int i = 0; i < counts; ++i)
                 {
                     ModelInfo mod = model[i];
-                    ModelInfo mods = modelS[i];
+                    ModelInfo mods = models[i];
                     modelId = mod.modelid;
 
                     if (!object.Equals(mod.bounding_radius, mods.bounding_radius))
@@ -272,6 +279,8 @@ namespace TableComparator
         {
             using (StreamWriter writer = new StreamWriter("gameobject_template.sql", true))
             {
+                writer.WriteLine(string.Format("-- Dump of {0}", DateTime.Now));
+
                 uint entry = 0;
                 int counts = gos.Count;
 
@@ -286,6 +295,70 @@ namespace TableComparator
 
                     if (!object.Equals(g.flags, gs.flags))
                         Query("flags", g.flags, entry, writer);
+
+                    if (i == (counts - 1))
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);
+                }
+            }
+
+            return false;
+        }
+
+        static bool SelectEquip()
+        {
+            table = "creature_equip_template";
+            field = "entry";
+
+            string query = "SELECT creature_equip_template.`entry`, creature_equip_template.`equipEntry1`, creature_equip_template.`equipEntry2`, creature_equip_template.`equipEntry3`, creature_equip_template_sniff.`entry`, creature_equip_template_sniff.`equipEntry1`, creature_equip_template_sniff.`equipEntry2`, creature_equip_template_sniff.`equipEntry3` FROM creature_equip_template INNER JOIN creature_equip_template_sniff ON creature_equip_template.`entry` = creature_equip_template_sniff.`entry` ORDER BY creature_equip_template.`entry`";
+            command = new MySqlCommand(query, connection);
+
+            using (MySqlDataReader db = command.ExecuteReader())
+            {
+                while (db.Read())
+                {
+                    EquipmentTemplate et = new EquipmentTemplate();
+                    EquipmentTemplate ets = new EquipmentTemplate();
+
+                    et.entry = db[0].ToUint32();
+                    et.equipEntry1 = db[1].ToUint32();
+                    et.equipEntry2 = db[2].ToUint32();
+                    et.equipEntry3 = db[3].ToUint32();
+
+                    ets.entry = db[4].ToUint32();
+                    ets.equipEntry1 = db[5].ToUint32();
+                    ets.equipEntry2 = db[6].ToUint32();
+                    ets.equipEntry3 = db[7].ToUint32();
+
+                    equip.Add(et);
+                    equips.Add(ets);
+                }
+            }
+            return CompareEquip();
+        }
+
+        static bool CompareEquip()
+        {
+            using (StreamWriter writer = new StreamWriter("creature_equip_template.sql", true))
+            {
+                writer.WriteLine(string.Format("-- Dump of {0}", DateTime.Now));
+
+                uint entry = 0;
+                int counts = equip.Count;
+
+                for (int i = 0; i < counts; ++i)
+                {
+                    EquipmentTemplate eq = equip[i];
+                    EquipmentTemplate eqs = equips[i];
+                    entry = eq.entry;
+
+                    if (!object.Equals(eq.equipEntry1, eqs.equipEntry1))
+                        Query("equipEntry1", eq.equipEntry1, entry, writer);
+
+                    if (!object.Equals(eq.equipEntry2, eqs.equipEntry2))
+                        Query("equipEntry2", eq.equipEntry2, entry, writer);
+
+                    if (!object.Equals(eq.equipEntry3, eqs.equipEntry3))
+                        Query("equipEntry3", eq.equipEntry3, entry, writer);
 
                     if (i == (counts - 1))
                         Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);

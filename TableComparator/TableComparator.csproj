@@ -50,6 +50,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TableStructure\CreatureTemplate.cs" />
+    <Compile Include="TableStructure\EquipmentTemplate.cs" />
     <Compile Include="TableStructure\GameobjectTemplate.cs" />
     <Compile Include="TableStructure\ModelInfo.cs" />
   </ItemGroup>
