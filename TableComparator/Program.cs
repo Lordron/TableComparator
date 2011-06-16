@@ -13,8 +13,8 @@ namespace TableComparator
         static MySqlCommand command;
         static MySqlConnection connection;
 
-        static List<Creature> creature = new List<Creature>(); //normal data
-        static List<Creature> creatureS = new List<Creature>(); //data from sniff
+        static List<Creature> creature = new List<Creature>();
+        static List<Creature> creatureS = new List<Creature>();
 
         static List<ModelInfo> model = new List<ModelInfo>();
         static List<ModelInfo> modelS = new List<ModelInfo>();
@@ -39,7 +39,7 @@ namespace TableComparator
                 connection = new MySqlConnection(connectionInfo);
             }
 
-            Console.Title = "Table Comparator v1.0";
+            Console.Title = "Table Comparator v1.1";
             AppDomain.CurrentDomain.UnhandledException +=
                 (o, e) => CrashReport(e.ExceptionObject.ToString());
 
@@ -243,7 +243,7 @@ namespace TableComparator
             table = "gameobject_template";
             field = "entry";
 
-            string query = "SELECT gameobject_templat.`entry`, gameobject_templat.`faction`, gameobject_templat.`flags`, gameobject_templat_sniff.`entry`, gameobject_templat_sniff.`faction`, gameobject_templat_sniff.`flags` FROM gameobject_templat INNER JOIN gameobject_templat_sniff ON gameobject_templat.`entry` = gameobject_templat_sniff.`entry` ORDER BY gameobject_templat.`entry`";
+            string query = "SELECT gameobject_template.`entry`, gameobject_template.`faction`, gameobject_template.`flags`, gameobject_template_sniff.`entry`, gameobject_template_sniff.`faction`, gameobject_template_sniff.`flags` FROM gameobject_template INNER JOIN gameobject_template_sniff ON gameobject_template.`entry` = gameobject_template_sniff.`entry` ORDER BY gameobject_template.`entry`";
             command = new MySqlCommand(query, connection);
 
             using (MySqlDataReader db = command.ExecuteReader())
@@ -273,7 +273,7 @@ namespace TableComparator
             using (StreamWriter writer = new StreamWriter("gameobject_template.sql", true))
             {
                 uint entry = 0;
-                int counts = modelS.Count;
+                int counts = gos.Count;
 
                 for (int i = 0; i < counts; ++i)
                 {
@@ -297,7 +297,6 @@ namespace TableComparator
 
         static void CrashReport(string message)
         {
-            Console.WriteLine("<<ERROR>>");
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
             Console.ResetColor();
