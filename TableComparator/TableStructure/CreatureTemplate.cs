@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace TableComparator.TableStructure
+﻿namespace TableComparator.TableStructure
 {
     public struct Creature
     {

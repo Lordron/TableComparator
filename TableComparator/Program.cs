@@ -25,10 +25,6 @@ namespace TableComparator
         static List<EquipmentTemplate> equip = new List<EquipmentTemplate>();
         static List<EquipmentTemplate> equips = new List<EquipmentTemplate>();
 
-        static uint BadQuery = 0;
-        static string table = "<null>";
-        static string field = "<null>";
-
         static void Main(string[] args)
         {
             using (StreamReader reader = new StreamReader("config.xml"))
@@ -43,8 +39,6 @@ namespace TableComparator
             }
 
             Console.Title = "Table Comparator v1.1";
-            AppDomain.CurrentDomain.UnhandledException +=
-                (o, e) => CrashReport(e.ExceptionObject.ToString());
 
             if (!ConnectionIsOpen)
                 return;
@@ -61,8 +55,8 @@ namespace TableComparator
 
         static bool SelectCreature()
         {
-            table = "creature_template";
-            field = "entry";
+            TableName = "creature_template";
+            FieldName = "entry";
             string query = "SELECT creature_template.entry, creature_template.speed_run, creature_template.speed_walk, creature_template.faction_A, creature_template.dynamicflags, creature_template.unit_flags, creature_template.rangeattacktime, creature_template.baseattacktime, creature_template.scale, creature_template.unit_class, creature_template.mindmg, creature_template.maxdmg, creature_template.attackpower, creature_template.rangedattackpower, creature_template.dmg_multiplier, creature_template.VehicleId, creature_template_sniff.entry, creature_template_sniff.speed_run, creature_template_sniff.speed_walk, creature_template_sniff.faction_A, creature_template_sniff.dynamicflags, creature_template_sniff.unit_flags, creature_template_sniff.rangeattacktime, creature_template_sniff.baseattacktime, creature_template_sniff.scale, creature_template_sniff.unit_class, creature_template_sniff.mindmg, creature_template_sniff.maxdmg, creature_template_sniff.attackpower, creature_template_sniff.rangedattackpower, creature_template_sniff.dmg_multiplier, creature_template_sniff.VehicleId FROM creature_template INNER JOIN creature_template_sniff ON creature_template.`entry` = creature_template_sniff.`entry` ORDER BY creature_template.entry";
             command = new MySqlCommand(query, connection);
             using (MySqlDataReader db = command.ExecuteReader())
@@ -174,7 +168,7 @@ namespace TableComparator
                         Query("baseattacktime", crs.baseAttackTime, entry, writer);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, TableName, ((float)BadQuery / (float)counts) * 100);
                 }
             }
 
@@ -183,8 +177,8 @@ namespace TableComparator
 
         static bool SelectModel()
         {
-            table = "creature_model_info";
-            field = "modelId";
+            TableName = "creature_model_info";
+            FieldName = "modelId";
 
             string query = "SELECT creature_model_info.`modelid`, creature_model_info.`bounding_radius`, creature_model_info.`combat_reach`, creature_model_info.`gender`, creature_model_info_sniff.`modelid`, creature_model_info_sniff.`bounding_radius`, creature_model_info_sniff.`combat_reach`, creature_model_info_sniff.`gender` FROM creature_model_info INNER JOIN creature_model_info_sniff ON creature_model_info.`modelid` = creature_model_info_sniff.`modelid` ORDER BY creature_model_info.`modelid`";
             command = new MySqlCommand(query, connection);
@@ -238,7 +232,7 @@ namespace TableComparator
                         Query("gender", mods.gender, modelId, writer);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, TableName, ((float)BadQuery / (float)counts) * 100);
                 }
             }
 
@@ -247,8 +241,8 @@ namespace TableComparator
 
         static bool SelectGameObject()
         {
-            table = "gameobject_template";
-            field = "entry";
+            TableName = "gameobject_template";
+            FieldName = "entry";
 
             string query = "SELECT gameobject_template.`entry`, gameobject_template.`faction`, gameobject_template.`flags`, gameobject_template_sniff.`entry`, gameobject_template_sniff.`faction`, gameobject_template_sniff.`flags` FROM gameobject_template INNER JOIN gameobject_template_sniff ON gameobject_template.`entry` = gameobject_template_sniff.`entry` ORDER BY gameobject_template.`entry`";
             command = new MySqlCommand(query, connection);
@@ -297,7 +291,7 @@ namespace TableComparator
                         Query("flags", g.flags, entry, writer);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, TableName, ((float)BadQuery / (float)counts) * 100);
                 }
             }
 
@@ -306,8 +300,8 @@ namespace TableComparator
 
         static bool SelectEquip()
         {
-            table = "creature_equip_template";
-            field = "entry";
+            TableName = "creature_equip_template";
+            FieldName = "entry";
 
             string query = "SELECT creature_equip_template.`entry`, creature_equip_template.`equipEntry1`, creature_equip_template.`equipEntry2`, creature_equip_template.`equipEntry3`, creature_equip_template_sniff.`entry`, creature_equip_template_sniff.`equipEntry1`, creature_equip_template_sniff.`equipEntry2`, creature_equip_template_sniff.`equipEntry3` FROM creature_equip_template INNER JOIN creature_equip_template_sniff ON creature_equip_template.`entry` = creature_equip_template_sniff.`entry` ORDER BY creature_equip_template.`entry`";
             command = new MySqlCommand(query, connection);
@@ -361,29 +355,22 @@ namespace TableComparator
                         Query("equipEntry3", eq.equipEntry3, entry, writer);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, table, ((float)BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, TableName, ((float)BadQuery / (float)counts) * 100);
                 }
             }
 
             return false;
         }
 
-        static void CrashReport(string message)
+        static void Query(string field, object fieldValue, uint creatureId, StreamWriter writer)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            Console.ResetColor();
-        }
-
-        static void Query(string field0, object value, uint entry, StreamWriter writer)
-        {
-            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}' WHERE {3} = {4};", table, field0, value, field, entry)); writer.Flush();
+            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}' WHERE {3} = {4};", TableName, field, fieldValue, FieldName, creatureId)); writer.Flush();
             ++BadQuery;
         }
 
-        static void Query(string field_1, string field_2, object value, uint entry, StreamWriter writer)
+        static void Query(string fieldA, string FieldB, object fieldsValue, uint creatureId, StreamWriter writer)
         {
-            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}', `{3}` = '{2}' WHERE {4} = {5};", table, field_1, value, field_2, field, entry)); writer.Flush();
+            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}', `{3}` = '{2}' WHERE {4} = {5};", TableName, fieldA, fieldsValue, FieldB, FieldName, creatureId)); writer.Flush();
             ++BadQuery;
         }
 
@@ -400,10 +387,16 @@ namespace TableComparator
                 }
                 catch
                 {
-                    CrashReport("Check your MySQL server");
+                    Generic.CrashReport("Check your MySQL server");
                     return false;
                 }
             }
         }
+
+        static uint BadQuery { get; set; }
+
+        static string TableName { get; set; }
+
+        static string FieldName { get; set; }
     }
 }

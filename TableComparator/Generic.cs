@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+using System.IO;
+using System.Globalization;
 namespace TableComparator
 {
     public static class Generic
@@ -69,6 +67,16 @@ namespace TableComparator
             byte.TryParse(val.ToString(), out num);
             return num;
         }
-    }
 
+        public static void CrashReport(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        public static void Qu(this StreamWriter wri, object val, uint type)
+        {
+        }
+    }
 }
