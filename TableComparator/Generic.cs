@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Globalization;
+﻿using System.Globalization;
+using System.IO;
 
 namespace TableComparator
 {
@@ -70,13 +70,18 @@ namespace TableComparator
 
         public static void WriteQuery(this StreamWriter writer, string field, object fieldValue, uint creatureId)
         {
-            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}' WHERE {3} = {4};", TableName, field, fieldValue, FieldName, creatureId)); writer.Flush();
+            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo,
+                                           "UPDATE `{0}` SET `{1}` = '{2}' WHERE {3} = {4};", TableName, field,
+                                           fieldValue, FieldName, creatureId));
             ++BadQuery;
         }
 
-        public static void WriteQuery(this StreamWriter writer, string fieldA, string fieldB, object fieldsValue, uint creatureId)
+        public static void WriteQuery(this StreamWriter writer, string fieldA, string fieldB, object fieldsValue,
+                                      uint creatureId)
         {
-            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}', `{3}` = '{2}' WHERE {4} = {5};", TableName, fieldA, fieldsValue, fieldB, FieldName, creatureId)); writer.Flush();
+            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo,
+                                           "UPDATE `{0}` SET `{1}` = '{2}', `{3}` = '{2}' WHERE {4} = {5};", TableName,
+                                           fieldA, fieldsValue, fieldB, FieldName, creatureId));
             ++BadQuery;
         }
 

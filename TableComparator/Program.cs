@@ -7,38 +7,41 @@ using TableComparator.TableStructure;
 
 namespace TableComparator
 {
-    class Program
+    internal class Program
     {
-        MySqlCommand _command;
-        MySqlConnection _connection;
+        private MySqlCommand _command;
+        private MySqlConnection _connection;
 
-        readonly List<CreatureTemplate> _creatures = new List<CreatureTemplate>();
-        readonly List<CreatureTemplate> _sniffCreatures = new List<CreatureTemplate>();
+        private readonly List<CreatureTemplate> _creatures = new List<CreatureTemplate>();
+        private readonly List<CreatureTemplate> _sniffCreatures = new List<CreatureTemplate>();
 
-        readonly List<ModelInfo> _models = new List<ModelInfo>();
-        readonly List<ModelInfo> _sniffModels = new List<ModelInfo>();
+        private readonly List<ModelInfo> _models = new List<ModelInfo>();
+        private readonly List<ModelInfo> _sniffModels = new List<ModelInfo>();
 
-        readonly List<GameobjectTemplate> _gameObjects = new List<GameobjectTemplate>();
-        readonly List<GameobjectTemplate> _sniffGameObjects = new List<GameobjectTemplate>();
+        private readonly List<GameobjectTemplate> _gameObjects = new List<GameobjectTemplate>();
+        private readonly List<GameobjectTemplate> _sniffGameObjects = new List<GameobjectTemplate>();
 
-        readonly List<EquipmentTemplate> _equipments = new List<EquipmentTemplate>();
-        readonly List<EquipmentTemplate> _sniffEquipments = new List<EquipmentTemplate>();
+        private readonly List<EquipmentTemplate> _equipments = new List<EquipmentTemplate>();
+        private readonly List<EquipmentTemplate> _sniffEquipments = new List<EquipmentTemplate>();
 
-        static void Main()
+        private static void Main()
         {
             Program p = new Program();
             p.Start();
         }
 
-        void Start()
+        private void Start()
         {
             using (StreamReader reader = new StreamReader("config.xml"))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(Config));
-                Config config = (Config)serializer.Deserialize(reader);
+                XmlSerializer serializer = new XmlSerializer(typeof (Config));
+                Config config = (Config) serializer.Deserialize(reader);
 
-                string connectionInfo = string.Format("host={0};port='{1}';database='{2}';UserName='{3}';Password='{4}';Connection Timeout='{5}'",
-                    config.Host, config.Port, config.DataBase, config.UserName, config.Password, config.ConnectionTimeOut);
+                string connectionInfo =
+                    string.Format(
+                        "host={0};port='{1}';database='{2}';UserName='{3}';Password='{4}';Connection Timeout='{5}'",
+                        config.Host, config.Port, config.DataBase, config.UserName, config.Password,
+                        config.ConnectionTimeOut);
 
                 _connection = new MySqlConnection(connectionInfo);
             }
@@ -59,11 +62,12 @@ namespace TableComparator
             Console.WriteLine("==========||====================================================||=========||");
         }
 
-        bool SelectCreature()
+        private bool SelectCreature()
         {
             Generic.TableName = "creature_template";
             Generic.BadQuery = 0;
-            const string query = "SELECT creature_template.entry, creature_template.speed_run, creature_template.speed_walk, creature_template.faction_A, creature_template.dynamicflags, creature_template.unit_flags, creature_template.rangeattacktime, creature_template.baseattacktime, creature_template.scale, creature_template.unit_class, creature_template.mindmg, creature_template.maxdmg, creature_template.attackpower, creature_template.rangedattackpower, creature_template.dmg_multiplier, creature_template.VehicleId, creature_template_sniff.entry, creature_template_sniff.speed_run, creature_template_sniff.speed_walk, creature_template_sniff.faction_A, creature_template_sniff.dynamicflags, creature_template_sniff.unit_flags, creature_template_sniff.rangeattacktime, creature_template_sniff.baseattacktime, creature_template_sniff.scale, creature_template_sniff.unit_class, creature_template_sniff.mindmg, creature_template_sniff.maxdmg, creature_template_sniff.attackpower, creature_template_sniff.rangedattackpower, creature_template_sniff.dmg_multiplier, creature_template_sniff.VehicleId FROM creature_template INNER JOIN creature_template_sniff ON creature_template.`entry` = creature_template_sniff.`entry` ORDER BY creature_template.entry";
+            const string query =
+                "SELECT creature_template.entry, creature_template.speed_run, creature_template.speed_walk, creature_template.faction_A, creature_template.dynamicflags, creature_template.unit_flags, creature_template.rangeattacktime, creature_template.baseattacktime, creature_template.scale, creature_template.unit_class, creature_template.mindmg, creature_template.maxdmg, creature_template.attackpower, creature_template.rangedattackpower, creature_template.dmg_multiplier, creature_template.VehicleId, creature_template_sniff.entry, creature_template_sniff.speed_run, creature_template_sniff.speed_walk, creature_template_sniff.faction_A, creature_template_sniff.dynamicflags, creature_template_sniff.unit_flags, creature_template_sniff.rangeattacktime, creature_template_sniff.baseattacktime, creature_template_sniff.scale, creature_template_sniff.unit_class, creature_template_sniff.mindmg, creature_template_sniff.maxdmg, creature_template_sniff.attackpower, creature_template_sniff.rangedattackpower, creature_template_sniff.dmg_multiplier, creature_template_sniff.VehicleId FROM creature_template INNER JOIN creature_template_sniff ON creature_template.`entry` = creature_template_sniff.`entry` ORDER BY creature_template.entry";
             _command = new MySqlCommand(query, _connection);
             using (MySqlDataReader db = _command.ExecuteReader())
             {
@@ -113,7 +117,7 @@ namespace TableComparator
             return CreatureCompare();
         }
 
-        bool CreatureCompare()
+        private bool CreatureCompare()
         {
             using (StreamWriter writer = new StreamWriter("creature_template.sql", true))
             {
@@ -173,19 +177,23 @@ namespace TableComparator
                         writer.WriteQuery("baseattacktime", sniffCreature.baseAttackTime, entry);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery, Generic.TableName, (Generic.BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery,
+                                          Generic.TableName, (Generic.BadQuery/(float) counts)*100);
                 }
+
+                writer.Flush();
             }
 
             return false;
         }
 
-        bool SelectModel()
+        private bool SelectModel()
         {
             Generic.TableName = "creature_model_info";
             Generic.FieldName = "modelId";
             Generic.BadQuery = 0;
-            const string query = "SELECT creature_model_info.`modelid`, creature_model_info.`bounding_radius`, creature_model_info.`combat_reach`, creature_model_info.`gender`, creature_model_info_sniff.`modelid`, creature_model_info_sniff.`bounding_radius`, creature_model_info_sniff.`combat_reach`, creature_model_info_sniff.`gender` FROM creature_model_info INNER JOIN creature_model_info_sniff ON creature_model_info.`modelid` = creature_model_info_sniff.`modelid` ORDER BY creature_model_info.`modelid`";
+            const string query =
+                "SELECT creature_model_info.`modelid`, creature_model_info.`bounding_radius`, creature_model_info.`combat_reach`, creature_model_info.`gender`, creature_model_info_sniff.`modelid`, creature_model_info_sniff.`bounding_radius`, creature_model_info_sniff.`combat_reach`, creature_model_info_sniff.`gender` FROM creature_model_info INNER JOIN creature_model_info_sniff ON creature_model_info.`modelid` = creature_model_info_sniff.`modelid` ORDER BY creature_model_info.`modelid`";
             _command = new MySqlCommand(query, _connection);
 
             using (MySqlDataReader db = _command.ExecuteReader())
@@ -212,7 +220,7 @@ namespace TableComparator
             return CompareModel();
         }
 
-        bool CompareModel()
+        private bool CompareModel()
         {
             using (StreamWriter writer = new StreamWriter("creature_model_info.sql", true))
             {
@@ -236,18 +244,22 @@ namespace TableComparator
                         writer.WriteQuery("gender", sniffModel.gender, modelId);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery, Generic.TableName, (Generic.BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery,
+                                          Generic.TableName, (Generic.BadQuery/(float) counts)*100);
                 }
+
+                writer.Flush();
             }
 
             return false;
         }
 
-        bool SelectGameObject()
+        private bool SelectGameObject()
         {
             Generic.TableName = "gameobject_template";
             Generic.BadQuery = 0;
-            const string query = "SELECT gameobject_template.`entry`, gameobject_template.`faction`, gameobject_template.`flags`, gameobject_template_sniff.`entry`, gameobject_template_sniff.`faction`, gameobject_template_sniff.`flags` FROM gameobject_template INNER JOIN gameobject_template_sniff ON gameobject_template.`entry` = gameobject_template_sniff.`entry` ORDER BY gameobject_template.`entry`";
+            const string query =
+                "SELECT gameobject_template.`entry`, gameobject_template.`faction`, gameobject_template.`flags`, gameobject_template_sniff.`entry`, gameobject_template_sniff.`faction`, gameobject_template_sniff.`flags` FROM gameobject_template INNER JOIN gameobject_template_sniff ON gameobject_template.`entry` = gameobject_template_sniff.`entry` ORDER BY gameobject_template.`entry`";
             _command = new MySqlCommand(query, _connection);
 
             using (MySqlDataReader db = _command.ExecuteReader())
@@ -272,7 +284,7 @@ namespace TableComparator
             return CompareGameObject();
         }
 
-        bool CompareGameObject()
+        private bool CompareGameObject()
         {
             using (StreamWriter writer = new StreamWriter("gameobject_template.sql", true))
             {
@@ -293,18 +305,22 @@ namespace TableComparator
                         writer.WriteQuery("flags", gameObject.flags, entry);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery, Generic.TableName, (Generic.BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery,
+                                          Generic.TableName, (Generic.BadQuery/(float) counts)*100);
                 }
+
+                writer.Flush();
             }
 
             return false;
         }
 
-        bool SelectEquip()
+        private bool SelectEquip()
         {
             Generic.TableName = "creature_equip_template";
             Generic.BadQuery = 0;
-            const string query = "SELECT creature_equip_template.`entry`, creature_equip_template.`equipEntry1`, creature_equip_template.`equipEntry2`, creature_equip_template.`equipEntry3`, creature_equip_template_sniff.`entry`, creature_equip_template_sniff.`equipEntry1`, creature_equip_template_sniff.`equipEntry2`, creature_equip_template_sniff.`equipEntry3` FROM creature_equip_template INNER JOIN creature_equip_template_sniff ON creature_equip_template.`entry` = creature_equip_template_sniff.`entry` ORDER BY creature_equip_template.`entry`";
+            const string query =
+                "SELECT creature_equip_template.`entry`, creature_equip_template.`equipEntry1`, creature_equip_template.`equipEntry2`, creature_equip_template.`equipEntry3`, creature_equip_template_sniff.`entry`, creature_equip_template_sniff.`equipEntry1`, creature_equip_template_sniff.`equipEntry2`, creature_equip_template_sniff.`equipEntry3` FROM creature_equip_template INNER JOIN creature_equip_template_sniff ON creature_equip_template.`entry` = creature_equip_template_sniff.`entry` ORDER BY creature_equip_template.`entry`";
             _command = new MySqlCommand(query, _connection);
 
             using (MySqlDataReader db = _command.ExecuteReader())
@@ -331,7 +347,7 @@ namespace TableComparator
             return CompareEquip();
         }
 
-        bool CompareEquip()
+        private bool CompareEquip()
         {
             using (StreamWriter writer = new StreamWriter("creature_equip_template.sql", true))
             {
@@ -351,14 +367,17 @@ namespace TableComparator
                     }
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery, Generic.TableName, (Generic.BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery,
+                                          Generic.TableName, (Generic.BadQuery/(float) counts)*100);
                 }
+
+                writer.Flush();
             }
 
             return false;
         }
 
-        bool ConnectionIsOpen
+        private bool ConnectionIsOpen
         {
             get
             {
