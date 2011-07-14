@@ -1,6 +1,6 @@
 ﻿namespace TableComparator.TableStructure
 {
-    public struct Creature
+    public struct CreatureTemplate
     {
         public uint entry;
         public float speed_run;

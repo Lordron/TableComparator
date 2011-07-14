@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using MySql.Data.MySqlClient;
-using TableComparator.TableStructure;
-using System.Globalization;
 using System.IO;
 using System.Xml.Serialization;
+using MySql.Data.MySqlClient;
+using TableComparator.TableStructure;
 
 namespace TableComparator
 {
@@ -13,19 +12,19 @@ namespace TableComparator
         static MySqlCommand command;
         static MySqlConnection connection;
 
-        static List<Creature> creature = new List<Creature>();
-        static List<Creature> creatures = new List<Creature>();
+        static readonly List<CreatureTemplate> creatures = new List<CreatureTemplate>();
+        static readonly List<CreatureTemplate> sniffCreatures = new List<CreatureTemplate>();
 
-        static List<ModelInfo> model = new List<ModelInfo>();
-        static List<ModelInfo> models = new List<ModelInfo>();
+        static readonly List<ModelInfo> models = new List<ModelInfo>();
+        static readonly List<ModelInfo> sniffModels = new List<ModelInfo>();
 
-        static List<GameobjectTemplate> go = new List<GameobjectTemplate>();
-        static List<GameobjectTemplate> gos = new List<GameobjectTemplate>();
+        static readonly List<GameobjectTemplate> gameObjects = new List<GameobjectTemplate>();
+        static readonly List<GameobjectTemplate> sniffGameObjects = new List<GameobjectTemplate>();
 
-        static List<EquipmentTemplate> equip = new List<EquipmentTemplate>();
-        static List<EquipmentTemplate> equips = new List<EquipmentTemplate>();
+        static readonly List<EquipmentTemplate> equipments = new List<EquipmentTemplate>();
+        static readonly List<EquipmentTemplate> sniffEquipments = new List<EquipmentTemplate>();
 
-        static void Main(string[] args)
+        static void Main()
         {
             using (StreamReader reader = new StreamReader("config.xml"))
             {
@@ -55,56 +54,57 @@ namespace TableComparator
 
         static bool SelectCreature()
         {
-            TableName = "creature_template";
-            FieldName = "entry";
-            string query = "SELECT creature_template.entry, creature_template.speed_run, creature_template.speed_walk, creature_template.faction_A, creature_template.dynamicflags, creature_template.unit_flags, creature_template.rangeattacktime, creature_template.baseattacktime, creature_template.scale, creature_template.unit_class, creature_template.mindmg, creature_template.maxdmg, creature_template.attackpower, creature_template.rangedattackpower, creature_template.dmg_multiplier, creature_template.VehicleId, creature_template_sniff.entry, creature_template_sniff.speed_run, creature_template_sniff.speed_walk, creature_template_sniff.faction_A, creature_template_sniff.dynamicflags, creature_template_sniff.unit_flags, creature_template_sniff.rangeattacktime, creature_template_sniff.baseattacktime, creature_template_sniff.scale, creature_template_sniff.unit_class, creature_template_sniff.mindmg, creature_template_sniff.maxdmg, creature_template_sniff.attackpower, creature_template_sniff.rangedattackpower, creature_template_sniff.dmg_multiplier, creature_template_sniff.VehicleId FROM creature_template INNER JOIN creature_template_sniff ON creature_template.`entry` = creature_template_sniff.`entry` ORDER BY creature_template.entry";
+            Generic.TableName = "creature_template";
+            Generic.FieldName = "entry";
+            Generic.BadQuery = 0;
+            const string query = "SELECT creature_template.entry, creature_template.speed_run, creature_template.speed_walk, creature_template.faction_A, creature_template.dynamicflags, creature_template.unit_flags, creature_template.rangeattacktime, creature_template.baseattacktime, creature_template.scale, creature_template.unit_class, creature_template.mindmg, creature_template.maxdmg, creature_template.attackpower, creature_template.rangedattackpower, creature_template.dmg_multiplier, creature_template.VehicleId, creature_template_sniff.entry, creature_template_sniff.speed_run, creature_template_sniff.speed_walk, creature_template_sniff.faction_A, creature_template_sniff.dynamicflags, creature_template_sniff.unit_flags, creature_template_sniff.rangeattacktime, creature_template_sniff.baseattacktime, creature_template_sniff.scale, creature_template_sniff.unit_class, creature_template_sniff.mindmg, creature_template_sniff.maxdmg, creature_template_sniff.attackpower, creature_template_sniff.rangedattackpower, creature_template_sniff.dmg_multiplier, creature_template_sniff.VehicleId FROM creature_template INNER JOIN creature_template_sniff ON creature_template.`entry` = creature_template_sniff.`entry` ORDER BY creature_template.entry";
             command = new MySqlCommand(query, connection);
             using (MySqlDataReader db = command.ExecuteReader())
             {
                 while (db.Read())
                 {
-                    Creature cr = new Creature();
-                    Creature crs = new Creature();
+                    CreatureTemplate creature = new CreatureTemplate();
+                    CreatureTemplate sniffCreature = new CreatureTemplate();
 
-                    cr.entry = db[0].ToUint32();
-                    cr.speed_run = db[1].ToFloat();
-                    cr.speed_walk = db[2].ToFloat();
-                    cr.faction = db[3].ToUint32();
-                    cr.dynamicFlags = db[4].ToUint32();
-                    cr.unit_flag = db[5].ToUint32();
-                    cr.rangeAttackTime = db[6].ToUint32();
-                    cr.baseAttackTime = db[7].ToUint32();
-                    cr.scale = db[8].ToFloat();
-                    cr.unit_class = db[9].ToUint32();
-                    cr.minDamage = db[10].ToFloat();
-                    cr.maxDamage = db[11].ToFloat();
-                    cr.attackPower = db[12].ToUint32();
-                    cr.rangeAttackPower = db[13].ToUint32();
-                    cr.dmgMultiplier = db[14].ToUint32();
-                    cr.vehicleId = db[15].ToUInt16();
+                    creature.entry = db[0].ToUint32();
+                    creature.speed_run = db[1].ToFloat();
+                    creature.speed_walk = db[2].ToFloat();
+                    creature.faction = db[3].ToUint32();
+                    creature.dynamicFlags = db[4].ToUint32();
+                    creature.unit_flag = db[5].ToUint32();
+                    creature.rangeAttackTime = db[6].ToUint32();
+                    creature.baseAttackTime = db[7].ToUint32();
+                    creature.scale = db[8].ToFloat();
+                    creature.unit_class = db[9].ToUint32();
+                    creature.minDamage = db[10].ToFloat();
+                    creature.maxDamage = db[11].ToFloat();
+                    creature.attackPower = db[12].ToUint32();
+                    creature.rangeAttackPower = db[13].ToUint32();
+                    creature.dmgMultiplier = db[14].ToUint32();
+                    creature.vehicleId = db[15].ToUInt16();
 
-                    crs.entry = db[16].ToUint32();
-                    crs.speed_run = db[17].ToFloat();
-                    crs.speed_walk = db[18].ToFloat();
-                    crs.faction = db[19].ToUint32();
-                    crs.dynamicFlags = db[20].ToUint32();
-                    crs.unit_flag = db[21].ToUint32();
-                    crs.rangeAttackTime = db[22].ToUint32();
-                    crs.baseAttackTime = db[23].ToUint32();
-                    crs.scale = db[24].ToFloat();
-                    crs.unit_class = db[25].ToUint32();
-                    crs.minDamage = db[26].ToFloat();
-                    crs.maxDamage = db[27].ToFloat();
-                    crs.attackPower = db[28].ToUint32();
-                    crs.rangeAttackPower = db[29].ToUint32();
-                    crs.dmgMultiplier = db[30].ToUint32();
-                    crs.vehicleId = db[31].ToUInt16();
+                    sniffCreature.entry = db[16].ToUint32();
+                    sniffCreature.speed_run = db[17].ToFloat();
+                    sniffCreature.speed_walk = db[18].ToFloat();
+                    sniffCreature.faction = db[19].ToUint32();
+                    sniffCreature.dynamicFlags = db[20].ToUint32();
+                    sniffCreature.unit_flag = db[21].ToUint32();
+                    sniffCreature.rangeAttackTime = db[22].ToUint32();
+                    sniffCreature.baseAttackTime = db[23].ToUint32();
+                    sniffCreature.scale = db[24].ToFloat();
+                    sniffCreature.unit_class = db[25].ToUint32();
+                    sniffCreature.minDamage = db[26].ToFloat();
+                    sniffCreature.maxDamage = db[27].ToFloat();
+                    sniffCreature.attackPower = db[28].ToUint32();
+                    sniffCreature.rangeAttackPower = db[29].ToUint32();
+                    sniffCreature.dmgMultiplier = db[30].ToUint32();
+                    sniffCreature.vehicleId = db[31].ToUInt16();
 
-                    creature.Add(cr);
-                    creatures.Add(crs);
+                    creatures.Add(creature);
+                    sniffCreatures.Add(sniffCreature);
                 }
             }
-            return CreatureCompare(); ;
+            return CreatureCompare();
         }
 
         static bool CreatureCompare()
@@ -113,62 +113,61 @@ namespace TableComparator
             {
                 writer.WriteLine(string.Format("-- Dump of {0}", DateTime.Now));
 
-                uint entry = 0;
-                int counts = creatures.Count;
+                int counts = sniffCreatures.Count;
 
                 for (int i = 0; i < counts; ++i)
                 {
-                    Creature cr = creature[i];
-                    Creature crs = creatures[i];
-                    entry = crs.entry;
+                    CreatureTemplate creature = creatures[i];
+                    CreatureTemplate sniffCreature = sniffCreatures[i];
+                    uint entry = sniffCreature.entry;
 
-                    if (!object.Equals(cr.speed_run, crs.speed_run))
-                        Query("speed_run", crs.speed_run, entry, writer);
+                    if (!Equals(creature.speed_run, sniffCreature.speed_run))
+                        writer.WriteQuery("speed_run", sniffCreature.speed_run, entry);
 
-                    if (!object.Equals(cr.speed_walk, crs.speed_walk))
-                        Query("speed_walk", crs.speed_walk, entry, writer);
+                    if (!Equals(creature.speed_walk, sniffCreature.speed_walk))
+                        writer.WriteQuery("speed_walk", sniffCreature.speed_walk, entry);
 
-                    if (!object.Equals(cr.vehicleId, crs.vehicleId))
-                        Query("vehicle_id", crs.vehicleId, entry, writer);
+                    if (!Equals(creature.vehicleId, sniffCreature.vehicleId))
+                        writer.WriteQuery("vehicle_id", sniffCreature.vehicleId, entry);
 
-                    if (!object.Equals(cr.unit_class, crs.unit_class))
-                        Query("unit_class", crs.unit_class, entry, writer);
+                    if (!Equals(creature.unit_class, sniffCreature.unit_class))
+                        writer.WriteQuery("unit_class", sniffCreature.unit_class, entry);
 
-                    if (!object.Equals(cr.unit_flag, crs.unit_flag))
-                        Query("unit_flags", crs.unit_flag, entry, writer);
+                    if (!Equals(creature.unit_flag, sniffCreature.unit_flag))
+                        writer.WriteQuery("unit_flags", sniffCreature.unit_flag, entry);
 
-                    if (!object.Equals(cr.faction, crs.faction))
-                        Query("faction_A", "faction_H", crs.faction, entry, writer);
+                    if (!Equals(creature.faction, sniffCreature.faction))
+                        writer.WriteQuery("faction_A", "faction_H", sniffCreature.faction, entry);
 
-                    if (!object.Equals(cr.dynamicFlags, crs.dynamicFlags))
-                        Query("dynamicflags", crs.dynamicFlags, entry, writer);
+                    if (!Equals(creature.dynamicFlags, sniffCreature.dynamicFlags))
+                        writer.WriteQuery("dynamicflags", sniffCreature.dynamicFlags, entry);
 
-                    if (!object.Equals(cr.scale, crs.scale))
-                        Query("scale", crs.scale, entry, writer);
+                    if (!Equals(creature.scale, sniffCreature.scale))
+                        writer.WriteQuery("scale", sniffCreature.scale, entry);
 
-                    if (!object.Equals(cr.maxDamage, crs.maxDamage))
-                        Query("maxdmg", crs.maxDamage, entry, writer);
+                    if (!Equals(creature.maxDamage, sniffCreature.maxDamage))
+                        writer.WriteQuery("maxdmg", sniffCreature.maxDamage, entry);
 
-                    if (!object.Equals(cr.minDamage, crs.minDamage))
-                        Query("mindmg", crs.minDamage, entry, writer);
+                    if (!Equals(creature.minDamage, sniffCreature.minDamage))
+                        writer.WriteQuery("mindmg", sniffCreature.minDamage, entry);
 
-                    if (!object.Equals(cr.dmgMultiplier, crs.dmgMultiplier))
-                        Query("dmg_multiplier", crs.dmgMultiplier, entry, writer);
+                    if (!Equals(creature.dmgMultiplier, sniffCreature.dmgMultiplier))
+                        writer.WriteQuery("dmg_multiplier", sniffCreature.dmgMultiplier, entry);
 
-                    if (!object.Equals(cr.attackPower, crs.attackPower))
-                        Query("attackpower", crs.attackPower, entry, writer);
+                    if (!Equals(creature.attackPower, sniffCreature.attackPower))
+                        writer.WriteQuery("attackpower", sniffCreature.attackPower, entry);
 
-                    if (!object.Equals(cr.rangeAttackPower, crs.rangeAttackPower))
-                        Query("rangedattackpower", crs.rangeAttackPower, entry, writer);
+                    if (!Equals(creature.rangeAttackPower, sniffCreature.rangeAttackPower))
+                        writer.WriteQuery("rangedattackpower", sniffCreature.rangeAttackPower, entry);
 
-                    if (!object.Equals(cr.rangeAttackTime, crs.rangeAttackTime))
-                        Query("rangeattacktime", crs.rangeAttackTime, entry, writer);
+                    if (!Equals(creature.rangeAttackTime, sniffCreature.rangeAttackTime))
+                        writer.WriteQuery("rangeattacktime", sniffCreature.rangeAttackTime, entry);
 
-                    if (!object.Equals(cr.baseAttackTime, crs.baseAttackTime))
-                        Query("baseattacktime", crs.baseAttackTime, entry, writer);
+                    if (!Equals(creature.baseAttackTime, sniffCreature.baseAttackTime))
+                        writer.WriteQuery("baseattacktime", sniffCreature.baseAttackTime, entry);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, TableName, ((float)BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery, Generic.TableName, (Generic.BadQuery / (float)counts) * 100);
                 }
             }
 
@@ -177,31 +176,31 @@ namespace TableComparator
 
         static bool SelectModel()
         {
-            TableName = "creature_model_info";
-            FieldName = "modelId";
-
-            string query = "SELECT creature_model_info.`modelid`, creature_model_info.`bounding_radius`, creature_model_info.`combat_reach`, creature_model_info.`gender`, creature_model_info_sniff.`modelid`, creature_model_info_sniff.`bounding_radius`, creature_model_info_sniff.`combat_reach`, creature_model_info_sniff.`gender` FROM creature_model_info INNER JOIN creature_model_info_sniff ON creature_model_info.`modelid` = creature_model_info_sniff.`modelid` ORDER BY creature_model_info.`modelid`";
+            Generic.TableName = "creature_model_info";
+            Generic.FieldName = "modelId";
+            Generic.BadQuery = 0;
+            const string query = "SELECT creature_model_info.`modelid`, creature_model_info.`bounding_radius`, creature_model_info.`combat_reach`, creature_model_info.`gender`, creature_model_info_sniff.`modelid`, creature_model_info_sniff.`bounding_radius`, creature_model_info_sniff.`combat_reach`, creature_model_info_sniff.`gender` FROM creature_model_info INNER JOIN creature_model_info_sniff ON creature_model_info.`modelid` = creature_model_info_sniff.`modelid` ORDER BY creature_model_info.`modelid`";
             command = new MySqlCommand(query, connection);
 
             using (MySqlDataReader db = command.ExecuteReader())
             {
                 while (db.Read())
                 {
-                    ModelInfo mod = new ModelInfo();
-                    ModelInfo modS = new ModelInfo();
+                    ModelInfo model = new ModelInfo();
+                    ModelInfo sniffModel = new ModelInfo();
 
-                    mod.modelid = db[0].ToUint32();
-                    mod.bounding_radius = db[1].ToFloat();
-                    mod.combat_reach = db[2].ToFloat();
-                    mod.gender = db[3].ToSByte();
+                    model.modelid = db[0].ToUint32();
+                    model.bounding_radius = db[1].ToFloat();
+                    model.combat_reach = db[2].ToFloat();
+                    model.gender = db[3].ToSByte();
 
-                    modS.modelid = db[4].ToUint32();
-                    modS.bounding_radius = db[5].ToFloat();
-                    modS.combat_reach = db[6].ToFloat();
-                    modS.gender = db[7].ToSByte();
+                    sniffModel.modelid = db[4].ToUint32();
+                    sniffModel.bounding_radius = db[5].ToFloat();
+                    sniffModel.combat_reach = db[6].ToFloat();
+                    sniffModel.gender = db[7].ToSByte();
 
-                    model.Add(mod);
-                    models.Add(modS);
+                    models.Add(model);
+                    sniffModels.Add(sniffModel);
                 }
             }
             return CompareModel();
@@ -213,26 +212,25 @@ namespace TableComparator
             {
                 writer.WriteLine(string.Format("-- Dump of {0}", DateTime.Now));
 
-                uint modelId = 0;
-                int counts = models.Count;
+                int counts = sniffModels.Count;
 
                 for (int i = 0; i < counts; ++i)
                 {
-                    ModelInfo mod = model[i];
-                    ModelInfo mods = models[i];
-                    modelId = mod.modelid;
+                    ModelInfo model = models[i];
+                    ModelInfo sniffModel = sniffModels[i];
+                    uint modelId = model.modelid;
 
-                    if (!object.Equals(mod.bounding_radius, mods.bounding_radius))
-                        Query("bounding_radius", mods.bounding_radius, modelId, writer);
+                    if (!Equals(model.bounding_radius, sniffModel.bounding_radius))
+                        writer.WriteQuery("bounding_radius", sniffModel.bounding_radius, modelId);
 
-                    if (!object.Equals(mod.combat_reach, mods.combat_reach))
-                        Query("combat_reach", mods.combat_reach, modelId, writer);
+                    if (!Equals(model.combat_reach, sniffModel.combat_reach))
+                        writer.WriteQuery("combat_reach", sniffModel.combat_reach, modelId);
 
-                    if (!object.Equals(mod.gender, mods.gender))
-                        Query("gender", mods.gender, modelId, writer);
+                    if (!Equals(model.gender, sniffModel.gender))
+                        writer.WriteQuery("gender", sniffModel.gender, modelId);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, TableName, ((float)BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery, Generic.TableName, (Generic.BadQuery / (float)counts) * 100);
                 }
             }
 
@@ -241,29 +239,29 @@ namespace TableComparator
 
         static bool SelectGameObject()
         {
-            TableName = "gameobject_template";
-            FieldName = "entry";
-
-            string query = "SELECT gameobject_template.`entry`, gameobject_template.`faction`, gameobject_template.`flags`, gameobject_template_sniff.`entry`, gameobject_template_sniff.`faction`, gameobject_template_sniff.`flags` FROM gameobject_template INNER JOIN gameobject_template_sniff ON gameobject_template.`entry` = gameobject_template_sniff.`entry` ORDER BY gameobject_template.`entry`";
+            Generic.TableName = "gameobject_template";
+            Generic.FieldName = "entry";
+            Generic.BadQuery = 0;
+            const string query = "SELECT gameobject_template.`entry`, gameobject_template.`faction`, gameobject_template.`flags`, gameobject_template_sniff.`entry`, gameobject_template_sniff.`faction`, gameobject_template_sniff.`flags` FROM gameobject_template INNER JOIN gameobject_template_sniff ON gameobject_template.`entry` = gameobject_template_sniff.`entry` ORDER BY gameobject_template.`entry`";
             command = new MySqlCommand(query, connection);
 
             using (MySqlDataReader db = command.ExecuteReader())
             {
                 while (db.Read())
                 {
-                    GameobjectTemplate g = new GameobjectTemplate();
-                    GameobjectTemplate gs = new GameobjectTemplate();
+                    GameobjectTemplate gameObject = new GameobjectTemplate();
+                    GameobjectTemplate sniffGameObject = new GameobjectTemplate();
 
-                    g.entry = db[0].ToUint32();
-                    g.faction = db[1].ToUint32();
-                    g.flags = db[2].ToUint32();
+                    gameObject.entry = db[0].ToUint32();
+                    gameObject.faction = db[1].ToUint32();
+                    gameObject.flags = db[2].ToUint32();
 
-                    gs.entry = db[3].ToUint32();
-                    gs.faction = db[4].ToUint32();
-                    gs.flags = db[5].ToUint32();
+                    sniffGameObject.entry = db[3].ToUint32();
+                    sniffGameObject.faction = db[4].ToUint32();
+                    sniffGameObject.flags = db[5].ToUint32();
 
-                    go.Add(g);
-                    gos.Add(gs);
+                    gameObjects.Add(gameObject);
+                    sniffGameObjects.Add(sniffGameObject);
                 }
             }
             return CompareGameObject();
@@ -275,23 +273,22 @@ namespace TableComparator
             {
                 writer.WriteLine(string.Format("-- Dump of {0}", DateTime.Now));
 
-                uint entry = 0;
-                int counts = gos.Count;
+                int counts = sniffGameObjects.Count;
 
                 for (int i = 0; i < counts; ++i)
                 {
-                    GameobjectTemplate g = go[i];
-                    GameobjectTemplate gs = gos[i];
-                    entry = g.entry;
+                    GameobjectTemplate gameObject = gameObjects[i];
+                    GameobjectTemplate sniffGameObject = sniffGameObjects[i];
+                    uint entry = gameObject.entry;
 
-                    if (!object.Equals(g.faction, gs.faction))
-                        Query("faction", g.faction, entry, writer);
+                    if (!Equals(gameObject.faction, sniffGameObject.faction))
+                        writer.WriteQuery("faction", gameObject.faction, entry);
 
-                    if (!object.Equals(g.flags, gs.flags))
-                        Query("flags", g.flags, entry, writer);
+                    if (!Equals(gameObject.flags, sniffGameObject.flags))
+                        writer.WriteQuery("flags", gameObject.flags, entry);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, TableName, ((float)BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery, Generic.TableName, (Generic.BadQuery / (float)counts) * 100);
                 }
             }
 
@@ -300,31 +297,31 @@ namespace TableComparator
 
         static bool SelectEquip()
         {
-            TableName = "creature_equip_template";
-            FieldName = "entry";
-
-            string query = "SELECT creature_equip_template.`entry`, creature_equip_template.`equipEntry1`, creature_equip_template.`equipEntry2`, creature_equip_template.`equipEntry3`, creature_equip_template_sniff.`entry`, creature_equip_template_sniff.`equipEntry1`, creature_equip_template_sniff.`equipEntry2`, creature_equip_template_sniff.`equipEntry3` FROM creature_equip_template INNER JOIN creature_equip_template_sniff ON creature_equip_template.`entry` = creature_equip_template_sniff.`entry` ORDER BY creature_equip_template.`entry`";
+            Generic.TableName = "creature_equip_template";
+            Generic.FieldName = "entry";
+            Generic.BadQuery = 0;
+            const string query = "SELECT creature_equip_template.`entry`, creature_equip_template.`equipEntry1`, creature_equip_template.`equipEntry2`, creature_equip_template.`equipEntry3`, creature_equip_template_sniff.`entry`, creature_equip_template_sniff.`equipEntry1`, creature_equip_template_sniff.`equipEntry2`, creature_equip_template_sniff.`equipEntry3` FROM creature_equip_template INNER JOIN creature_equip_template_sniff ON creature_equip_template.`entry` = creature_equip_template_sniff.`entry` ORDER BY creature_equip_template.`entry`";
             command = new MySqlCommand(query, connection);
 
             using (MySqlDataReader db = command.ExecuteReader())
             {
                 while (db.Read())
                 {
-                    EquipmentTemplate et = new EquipmentTemplate();
-                    EquipmentTemplate ets = new EquipmentTemplate();
+                    EquipmentTemplate equipment = new EquipmentTemplate();
+                    EquipmentTemplate sniffEquipment = new EquipmentTemplate();
 
-                    et.entry = db[0].ToUint32();
-                    et.equipEntry1 = db[1].ToUint32();
-                    et.equipEntry2 = db[2].ToUint32();
-                    et.equipEntry3 = db[3].ToUint32();
+                    equipment.entry = db[0].ToUint32();
+                    equipment.equipEntry1 = db[1].ToUint32();
+                    equipment.equipEntry2 = db[2].ToUint32();
+                    equipment.equipEntry3 = db[3].ToUint32();
 
-                    ets.entry = db[4].ToUint32();
-                    ets.equipEntry1 = db[5].ToUint32();
-                    ets.equipEntry2 = db[6].ToUint32();
-                    ets.equipEntry3 = db[7].ToUint32();
+                    sniffEquipment.entry = db[4].ToUint32();
+                    sniffEquipment.equipEntry1 = db[5].ToUint32();
+                    sniffEquipment.equipEntry2 = db[6].ToUint32();
+                    sniffEquipment.equipEntry3 = db[7].ToUint32();
 
-                    equip.Add(et);
-                    equips.Add(ets);
+                    equipments.Add(equipment);
+                    sniffEquipments.Add(sniffEquipment);
                 }
             }
             return CompareEquip();
@@ -336,42 +333,29 @@ namespace TableComparator
             {
                 writer.WriteLine(string.Format("-- Dump of {0}", DateTime.Now));
 
-                uint entry = 0;
-                int counts = equip.Count;
+                int counts = equipments.Count;
 
                 for (int i = 0; i < counts; ++i)
                 {
-                    EquipmentTemplate eq = equip[i];
-                    EquipmentTemplate eqs = equips[i];
-                    entry = eq.entry;
+                    EquipmentTemplate equipment = equipments[i];
+                    EquipmentTemplate sniffEquipment = sniffEquipments[i];
+                    uint entry = equipment.entry;
 
-                    if (!object.Equals(eq.equipEntry1, eqs.equipEntry1))
-                        Query("equipEntry1", eq.equipEntry1, entry, writer);
+                    if (!Equals(equipment.equipEntry1, sniffEquipment.equipEntry1))
+                        writer.WriteQuery("equipEntry1", equipment.equipEntry1, entry);
 
-                    if (!object.Equals(eq.equipEntry2, eqs.equipEntry2))
-                        Query("equipEntry2", eq.equipEntry2, entry, writer);
+                    if (!Equals(equipment.equipEntry2, sniffEquipment.equipEntry2))
+                        writer.WriteQuery("equipEntry2", equipment.equipEntry2, entry);
 
-                    if (!object.Equals(eq.equipEntry3, eqs.equipEntry3))
-                        Query("equipEntry3", eq.equipEntry3, entry, writer);
+                    if (!Equals(equipment.equipEntry3, sniffEquipment.equipEntry3))
+                        writer.WriteQuery("equipEntry3", equipment.equipEntry3, entry);
 
                     if (i == (counts - 1))
-                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, BadQuery, TableName, ((float)BadQuery / (float)counts) * 100);
+                        Console.WriteLine("==========|| {0,-11}|| {1,-13}|| {2,-21}|| {3}||", counts, Generic.BadQuery, Generic.TableName, (Generic.BadQuery / (float)counts) * 100);
                 }
             }
 
             return false;
-        }
-
-        static void Query(string field, object fieldValue, uint creatureId, StreamWriter writer)
-        {
-            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}' WHERE {3} = {4};", TableName, field, fieldValue, FieldName, creatureId)); writer.Flush();
-            ++BadQuery;
-        }
-
-        static void Query(string fieldA, string FieldB, object fieldsValue, uint creatureId, StreamWriter writer)
-        {
-            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}', `{3}` = '{2}' WHERE {4} = {5};", TableName, fieldA, fieldsValue, FieldB, FieldName, creatureId)); writer.Flush();
-            ++BadQuery;
         }
 
         static bool ConnectionIsOpen
@@ -387,16 +371,11 @@ namespace TableComparator
                 }
                 catch
                 {
-                    Generic.CrashReport("Check your MySQL server");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Check your MySQL server");
                     return false;
                 }
             }
         }
-
-        static uint BadQuery { get; set; }
-
-        static string TableName { get; set; }
-
-        static string FieldName { get; set; }
     }
 }

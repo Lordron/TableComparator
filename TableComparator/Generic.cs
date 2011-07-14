@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Globalization;
+
 namespace TableComparator
 {
     public static class Generic
@@ -68,15 +68,22 @@ namespace TableComparator
             return num;
         }
 
-        public static void CrashReport(string message)
+        public static void WriteQuery(this StreamWriter writer, string field, object fieldValue, uint creatureId)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            Console.ResetColor();
+            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}' WHERE {3} = {4};", TableName, field, fieldValue, FieldName, creatureId)); writer.Flush();
+            ++BadQuery;
         }
 
-        public static void Qu(this StreamWriter wri, object val, uint type)
+        public static void WriteQuery(this StreamWriter writer, string fieldA, string fieldB, object fieldsValue, uint creatureId)
         {
+            writer.WriteLine(string.Format(NumberFormatInfo.InvariantInfo, "UPDATE `{0}` SET `{1}` = '{2}', `{3}` = '{2}' WHERE {4} = {5};", TableName, fieldA, fieldsValue, fieldB, FieldName, creatureId)); writer.Flush();
+            ++BadQuery;
         }
+
+        public static uint BadQuery { get; set; }
+
+        public static string TableName { get; set; }
+
+        public static string FieldName { get; set; }
     }
 }
