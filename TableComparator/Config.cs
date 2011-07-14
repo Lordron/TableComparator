@@ -5,19 +5,19 @@ namespace TableComparator
     [Serializable]
     public class Config
     {
-        public string host;
-        public uint port;
-        public string userName;
-        public string password;
-        public string dataBase;
-        public uint connectionTimeOut;
+        public string Host;
+        public uint Port;
+        public string UserName;
+        public string Password;
+        public string DataBase;
+        public uint ConnectionTimeOut;
 
         public Config()
         {
-            host = "localhost";
-            port = 3306;
-            userName = password = dataBase = "mangos";
-            connectionTimeOut = 12000;
+            Host = "localhost";
+            Port = 3306;
+            UserName = Password = DataBase = "mangos";
+            ConnectionTimeOut = 12000;
         }
     }
 }
